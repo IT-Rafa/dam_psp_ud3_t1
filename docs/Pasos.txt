@@ -1,0 +1,27 @@
+1º Creamos clases como ejemplo en teoria Sockets 2º parte
+	- Servidor1Objeto
+	- Cliente1Objeto
+	- Persona
+	
+2º Comprobamos, analizamos y añadimos comentarios propios
+
+3º Modificamos y separamos partes de código en cada clase
+
+4º Adaptamos Clases a las del enunciado
+	- Persona -> Ticket
+		- nombre
+		- fecha
+		- importe
+		
+	- Proceso:
+		- Cliente prepara y envia datos.
+			- nombre
+			- unidades
+			- tipo ticket
+			- fecha
+		
+		- Servidor prepara y devuelve objeto ticket
+			- calcula importe según unidades y tipo
+			- crea objeto Ticket
+		- Cliente recibe ticket
+		
