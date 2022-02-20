@@ -7,31 +7,42 @@ package es.itrafa.dam_psp_ud3_t1.actividad3_1;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Amusement Park Ticket Server.
+ * <p>
+ * Starts a server that receives requests from clients to buy tickets, through a 
+ * TicketAsk object for an amusement park, and returns the amount of the tickets 
+ * through a Ticket object. Use the 2000 port
  *
  * @author it-ra
  */
 public class TicketsServer {
+    // ATTRIBUTES
 
+    static final private int PORT = 2000;
+    // MAIN METHOD
+    /** 
+     * Wait for cient connection, if it is successful, exchanges data.
+     * 
+     * @param args 
+     */
     public static void main(String[] args) {
 
-        try {
-            int port = 2000;
-            
-            // Creamos servidor
-            ServerSocket connTCP = new ServerSocket(port);
-
+        // Creamos servidor (try-with-resources)
+        try (ServerSocket connTCP = new ServerSocket(PORT)) {
             // Ponemos servidor en espera
             Logger.getLogger(TicketsServer.class.getName()).log(
-                    Level.INFO, String.format("Server waiting in port %d", port));
+                    Level.INFO, String.format(
+                            "Server will wait a client request in port %d", PORT));
 
-            // Recibimos intento comunicación de cliente
+            // Se espera a que un cliente realice una conexión.
+            // Al realizarse, devuelve un objeto Socket, a través del cual se 
+            // establecerá  el resto de comunicación con el cliente
             Socket connCli = connTCP.accept();
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
@@ -44,41 +55,43 @@ public class TicketsServer {
             // Cerramos Servidor
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, "Cerrando servidor");
-
             connCli.close();
-            connTCP.close();
+            // connTCP ya cerrado
 
         } catch (IOException ex) {
-            Logger.getLogger(TicketsServer.class.getName()).log(Level.SEVERE, null, ex);
+            // Gestiona tanto el método main() como manageClientData()
+            Logger.getLogger(TicketsServer.class.getName()).
+                    log(Level.SEVERE, null, ex);
         }
     }
 
     private static void manageClientData(Socket connCli) throws IOException {
 
-        try {
+        try (ObjectInputStream inputObject
+                = new ObjectInputStream(connCli.getInputStream());
+                ObjectOutputStream outObject
+                = new ObjectOutputStream(connCli.getOutputStream())) {
+
             // Capturamos datos de la petición
-            ObjectInputStream inputObject = new ObjectInputStream(connCli.getInputStream());
-            
             TicketAsk dato = (TicketAsk) inputObject.readObject();
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
-                            "Recibidos datos petición ticket:\n** " + dato.toString()));
-            
-            // Creamos objeto Ticket en base datos enviados
+                            "Recibidos datos petición ticket:\n** %s",
+                            dato.toString()));
 
+            // Creamos objeto Ticket en base datos enviados
             Ticket ticketToSend = new Ticket(dato);
-            
+
             // Enviamos objeto Ticket
-            ObjectOutputStream outObject = new ObjectOutputStream(connCli.getOutputStream());
             outObject.writeObject(ticketToSend);
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
-                            "Enviado Ticket: \n** " + ticketToSend.toString()));
-            outObject.close();
-            inputObject.close();
-            
+                            "Enviado Ticket: \n** %s",
+                            ticketToSend.toString()));
+
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(TicketsServer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TicketsServer.class.getName())
+                    .log(Level.SEVERE, null, ex);
         }
     }
 }

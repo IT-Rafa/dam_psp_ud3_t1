@@ -22,14 +22,14 @@ public class Ticket implements Serializable {
 
     // CONSTRUCTORS
     /**
-     * Constructor for an object of type Ticket using a TicketAsk object
+     * Class constructor using a TicketAsk object
      *
      * @param peticion TicketAsk object with data to create a Ticket Object
      */
     public Ticket(TicketAsk peticion) {
-        this.nameUser = peticion.getUsuario();
-        this.dateToUse = peticion.getFecha();
-        this.totalPrice = new BigDecimal(peticion.getTipo().getPrice() * peticion.getUnidades());
+        this.nameUser = peticion.getNameUser();
+        this.dateToUse = peticion.getDateToUse();
+        this.totalPrice = new BigDecimal(peticion.getType().getPrice() * peticion.getCant());
     }
 
     // GETTER & SETTERS
@@ -52,41 +52,43 @@ public class Ticket implements Serializable {
     }
 
     /**
-     * Return the date on which the ticket is valid
+     * Return the date on which the tickets are valid
      *
-     * @return Date on which the ticket is valid
+     * @return Date on which the tickets are valid
      */
     public LocalDate getDateToUse() {
         return dateToUse;
     }
 
     /**
-     * Modify the date on which the ticket is valid
+     * Modify the date on which the tickets are valid
      *
-     * @param dateToUse Date on which the ticket is valid
+     * @param dateToUse Date on which the tickets are valid
      */
     public void setDateToUse(LocalDate dateToUse) {
         this.dateToUse = dateToUse;
     }
 
     /**
-     * Return the price of all tickets buyer.
+     * Return the price of all tickets bought.
      * 
-     * @return The price of all tickets buyer
+     * @return The price of all tickets bought
      */
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
     /**
-     * Modify the price of all tickets buyer.
+     * Modify the price of all tickets bought.
      * 
-     * @param totalPrice The price of all tickets buyer
+     * @param totalPrice The price of all tickets bought
      */
     public void setImporte(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
-
+    /**
+     * Show Ticket as String
+     */
     @Override
     public String toString() {
         final DateTimeFormatter formatter

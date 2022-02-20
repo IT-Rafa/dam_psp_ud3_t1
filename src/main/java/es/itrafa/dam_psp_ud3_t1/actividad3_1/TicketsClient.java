@@ -9,54 +9,96 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Amusement Park Ticket Client.
+ * <p>
+ * Establishes communication with a Ticket Server for an amusement park, sends
+ * the ticket request and receives the ticket.
  *
  * @author it-ra
  */
 public class TicketsClient {
 
+    // ATTRIBUTES
+    static final private int SERVERPORT = 2000;
+    static final private String SERVERHOST = "localhost";
+
+    // MAIN METHOD
+    /**
+     * It tries to connect to the server and, if successful, exchanges data.
+     *
+     * @param args
+     */
     public static void main(String[] args) {
+        Ticket ticketReceived;
         try {
-            String Host = "localhost";
-            int puerto = 2000;
-            // Inicimos comunicación con servidor
-            Socket ServerConn = new Socket(Host, puerto);
-            Logger.getLogger(TicketsServer.class.getName()).log(
-                    Level.INFO, String.format("Iniciada comunicación con servidor ", Host));
-            
-            // Gestionamos comunicación con servidor
-            serverSendData(ServerConn);
-            
-            Logger.getLogger(TicketsServer.class.getName()).log(
-                    Level.INFO, "Fin comunicación con servidor");
-            
-            ServerConn.close();
+            // Iniciamos comunicación con servidor (try-with-resources
+            try (Socket ServerConn = new Socket(SERVERHOST, SERVERPORT)) {
+                Logger.getLogger(TicketsServer.class.getName()).log(
+                        Level.INFO, String.format(
+                                "Iniciada comunicación con servidor ", SERVERHOST));
+
+                // Gestionamos comunicación con servidor y guardamos ticket enviado
+                ticketReceived = makeRequest(ServerConn);
+                if (ticketReceived != null) {
+                    // Ticket recibido
+                    Logger.getLogger(TicketsServer.class.getName()).log(
+                            Level.INFO, String.format(
+                                    "Recibido Ticket: \n** %s", ticketReceived.toString()));
+                } else {
+                    Logger.getLogger(TicketsServer.class.getName()).log(
+                            Level.SEVERE, "Fallo de petición");
+                }
+
+                Logger.getLogger(TicketsServer.class.getName()).log(
+                        Level.INFO, "Fin comunicación con servidor");
+            }
         } catch (IOException ex) {
-            Logger.getLogger(TicketsClient.class.getName()).log(Level.SEVERE, null, ex);
+            // Gestiona tanto el método main() como makeRequest()
+            Logger.getLogger(TicketsClient.class.getName()).
+                    log(Level.SEVERE, null, ex);
         }
 
     }
 
-    private static void serverSendData(Socket ServerConn) throws IOException {
-        try {
-            TicketAsk askTicket = new TicketAsk("Rafa", 3, LocalDate.now(), TicketType.PENSIONISTAS);
+    // OTHER METHODS
+    /**
+     * Make request
+     *
+     * @param ServerConn
+     * @throws IOException
+     */
+    private static Ticket makeRequest(Socket ServerConn) throws IOException {
 
-            ObjectOutputStream outObject = new ObjectOutputStream(ServerConn.getOutputStream());
+        // Creamos petición mediante objeto TicketAsk
+        TicketAsk askTicket = new TicketAsk(
+                "Rafa",
+                LocalDate.now(),
+                TicketType.PENSIONISTAS,
+                3);
+
+        Ticket ticketReceived = null;
+
+        // Preparamos flujos entrada/salida (try-with resources)
+        try (
+                ObjectOutputStream outObject
+                = new ObjectOutputStream(ServerConn.getOutputStream());
+                ObjectInputStream inputObject
+                = new ObjectInputStream(ServerConn.getInputStream());) {
+
+            // Enviamos petición mediante objeto TicketAsk
             outObject.writeObject(askTicket);
             Logger.getLogger(TicketsServer.class.getName()).log(
-                    Level.INFO, String.format("Enviados datos petición ticket:\n%s ", askTicket.toString()));
+                    Level.INFO, String.format(
+                            "Enviados datos petición ticket:\n%s ",
+                            askTicket.toString()));
 
             // Esperamos objeto tipo Ticket del servidor
-            ObjectInputStream inputObject = new ObjectInputStream(ServerConn.getInputStream());
-            Ticket dato = (Ticket) inputObject.readObject();
-            Logger.getLogger(TicketsServer.class.getName()).log(
-                    Level.INFO, String.format(
-                            "Recibido Ticket: \n** %s", dato.toString()));
+            ticketReceived = (Ticket) inputObject.readObject();
 
-            inputObject.close();
-            outObject.close();
-            
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(TicketsClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TicketsClient.class.getName()).
+                    log(Level.SEVERE, null, ex);
         }
+        return ticketReceived;
     }
 }

@@ -19,106 +19,90 @@ public class TicketAsk implements Serializable {
 
     // ATTRIBUTES
     private String nameUser;
-    private int cant;
     private LocalDate dateToUse;
     private TicketType type;
+    private int cant;
 
     // CONSTRUCTORS
-    public TicketAsk(String nameUser, int unidades, LocalDate dateToUse, TicketType type) {
+    /**
+     * Class constructor that asks for all the necessary data to create a ticket
+     * 
+     * @param nameUser
+     * @param dateToUse
+     * @param type
+     * @param cant 
+     */
+    public TicketAsk(String nameUser, LocalDate dateToUse, TicketType type, int cant) {
         this.nameUser = nameUser;
         this.dateToUse = dateToUse;
-        this.cant = cant;
         this.type = type;
+        this.cant = cant;
     }
 
     // GETTER & SETTERS
     /**
-     * Return the name of the user who makes the purchase 
+     * Return the name of the user who makes the purchase
      *
-     * @return Name of the user who makes the purchase 
+     * @return Name of the user who makes the purchase
      */
     public String getNameUser() {
         return nameUser;
     }
 
     /**
-     * Modify the name of the user who makes the purchase 
+     * Return the day for which the tickets will be valid
      *
-     * @param nameUser New name of the user who makes the purchase 
-     */
-    public void setNombre(String nameUser) {
-        this.nameUser = nameUser;
-    }
-
-    /**
-     * Return the date on which the ticket is valid
-     *
-     * @return Date on which the ticket is valid
+     * @return The day for which the tickets will be valid
      */
     public LocalDate getDateToUse() {
         return dateToUse;
     }
 
     /**
-     * Modify the date on which the ticket is valid
+     * Modify the day for which the tickets will be valid
      *
-     * @param dateToUse Date on which the ticket is valid
+     * @param dateToUse The day for which the tickets will be valid
      */
     public void setDateToUse(LocalDate dateToUse) {
         this.dateToUse = dateToUse;
     }
 
     /**
-     * return cant of ticket to buy
+     * Return cant of chosen type of tickets to buy
      *
-     * @return cant of ticket to buy
+     * @return Cant of chosen type of tickets to buy
      */
-    public int getUnidades() {
-        return unidades;
+    public int getCant() {
+        return cant;
     }
 
     /**
-     * Modify cant of ticket to buy
+     * Modify cant of chosen type of tickets to buy
      *
-     * @param unidades
+     * @param cant cant of chosen type of tickets to buy
      */
-    public void setUnidades(int unidades) {
-        this.unidades = unidades;
+    public void setCant(int cant) {
+        this.cant = cant;
     }
 
     /**
-     * return date
+     * Return type of ticket to buy
      *
-     *
-     * @return name of ticket buyer
+     * @return Type of ticket to buy
      */
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    /**
-     * Modify name of ticket buyer
-     */
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
-
-    /**
-     * return type of ticket to buy
-     *
-     * @return name of ticket buyer
-     */
-    public TicketType getTipo() {
-        return tipo;
+    public TicketType getType() {
+        return type;
     }
 
     /**
      * Modify type of ticket to buy
      */
-    public void setTipo(TicketType tipo) {
-        this.tipo = tipo;
+    public void setType(TicketType type) {
+        this.type = type;
     }
-
+    /**
+     * Show TicketAsk as String
+     */
     @Override
     public String toString() {
         final DateTimeFormatter formatter
@@ -127,10 +111,10 @@ public class TicketAsk implements Serializable {
 
         String msg = String.format(
                 "Petición de ticket por usuario %s de %d entradas para %s para el día %s",
-                this.usuario,
-                this.unidades,
-                this.tipo.toString(),
-                this.fecha.format(formatter));
+                this.nameUser,
+                this.cant,
+                this.type.getDesc(),
+                this.dateToUse.format(formatter));
 
         return msg;
     }
