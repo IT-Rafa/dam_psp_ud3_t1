@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package es.itrafa.dam_psp_ud3_t1.actividad3_1;
 
 import java.io.Serializable;
@@ -11,62 +7,84 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+/**
+ * Represents the purchase of a group of tickets by a user for a specific day.
+ *
+ * @author it-ra
+ */
 @SuppressWarnings("serial")
 public class Ticket implements Serializable {
 
     // ATTRIBUTES
-    private String nombre;
-    private LocalDate fecha;
-    private BigDecimal importe;
+    private String nameUser;
+    private LocalDate dateToUse;
+    private BigDecimal totalPrice;
 
     // CONSTRUCTORS
-    public Ticket(String nombre, LocalDate fecha, BigDecimal importe) {
-        this.nombre = nombre;
-        this.fecha = fecha;
-        this.importe = importe;
+    /**
+     * Constructor for an object of type Ticket using a TicketAsk object
+     *
+     * @param peticion TicketAsk object with data to create a Ticket Object
+     */
+    public Ticket(TicketAsk peticion) {
+        this.nameUser = peticion.getUsuario();
+        this.dateToUse = peticion.getFecha();
+        this.totalPrice = new BigDecimal(peticion.getTipo().getPrice() * peticion.getUnidades());
     }
 
     // GETTER & SETTERS
     /**
-     * @return the nombre
+     * Return the name of the user who makes the purchase 
+     *
+     * @return Name of the user who makes the purchase 
      */
-    public String getNombre() {
-        return nombre;
+    public String getNameUser() {
+        return nameUser;
     }
 
     /**
-     * @param nombre the nombre to set
+     * Modify the name of the user who makes the purchase 
+     *
+     * @param nameUser New name of the user who makes the purchase 
      */
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombre(String nameUser) {
+        this.nameUser = nameUser;
     }
 
     /**
-     * @return the fecha
+     * Return the date on which the ticket is valid
+     *
+     * @return Date on which the ticket is valid
      */
-    public LocalDate getFecha() {
-        return fecha;
+    public LocalDate getDateToUse() {
+        return dateToUse;
     }
 
     /**
-     * @param fecha the fecha to set
+     * Modify the date on which the ticket is valid
+     *
+     * @param dateToUse Date on which the ticket is valid
      */
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
+    public void setDateToUse(LocalDate dateToUse) {
+        this.dateToUse = dateToUse;
     }
 
     /**
-     * @return the unidades
+     * Return the price of all tickets buyer.
+     * 
+     * @return The price of all tickets buyer
      */
-    public BigDecimal getImporte() {
-        return importe;
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
     }
 
     /**
-     * @param unidades the unidades to set
+     * Modify the price of all tickets buyer.
+     * 
+     * @param totalPrice The price of all tickets buyer
      */
-    public void setImporte(BigDecimal unidades) {
-        this.importe = unidades;
+    public void setImporte(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     @Override
@@ -76,9 +94,9 @@ public class Ticket implements Serializable {
                         new Locale("es", "ES"));
         String msg = String.format(
                 "Ticket para el día %s; A nombre de %s por %s €",
-                this.fecha.format(formatter),
-                this.nombre,
-                new DecimalFormat("#0.##").format(this.importe)
+                this.dateToUse.format(formatter),
+                this.nameUser,
+                new DecimalFormat("#0.##").format(this.totalPrice)
         );
         return msg;
     }

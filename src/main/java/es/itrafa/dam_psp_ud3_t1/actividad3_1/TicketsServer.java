@@ -23,69 +23,62 @@ public class TicketsServer {
 
         try {
             int port = 2000;
+            
             // Creamos servidor
             ServerSocket connTCP = new ServerSocket(port);
 
             // Ponemos servidor en espera
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format("Server waiting in port %d", port));
+
+            // Recibimos intento comunicación de cliente
             Socket connCli = connTCP.accept();
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
                             "Client request received from ip %s ",
                             connCli.getRemoteSocketAddress().toString()));
-            // Leemos objeto
-            ObjectInputStream inputObject = new ObjectInputStream(connCli.getInputStream());
 
-            TicketAsk dato = (TicketAsk) inputObject.readObject();
-            Logger.getLogger(TicketsServer.class.getName()).log(
-                    Level.INFO, String.format(
-                            "Recibida Petición Ticket:\n** " + dato.toString()));
+            // Gestionamos petición cliente
+            manageClientData(connCli);
 
-            // Creamos objeto
-            Ticket ticketToSend = new Ticket(dato.getUsuario(), dato.getFecha(), calculateImport(dato.getTipo(), dato.getUnidades()));
-
-            // Enviamos objeto
-            ObjectOutputStream outObject = new ObjectOutputStream(connCli.getOutputStream());
-
-            outObject.writeObject(ticketToSend);
-            Logger.getLogger(TicketsServer.class.getName()).log(
-                    Level.INFO, String.format(
-                            "Enviado Ticket: \n** " + ticketToSend.toString()));
-
-            // Cerramos todo
+            // Cerramos Servidor
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, "Cerrando servidor");
-            outObject.close();
-            inputObject.close();
+
             connCli.close();
             connTCP.close();
-
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(TicketsServer.class.getName()).log(Level.SEVERE, null, ex);
 
         } catch (IOException ex) {
             Logger.getLogger(TicketsServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private static BigDecimal calculateImport(TicketType tipo, int unidades) {
-        // 10 €, Niños: 3 €, Carnet joven: 5 € y 3ª edad: 4 €
-        switch (tipo) {
-            case NORMAL:
-                return new BigDecimal(10 * unidades);
+    private static void manageClientData(Socket connCli) throws IOException {
 
-            case MENORES:
-                return new BigDecimal(3 * unidades);
+        try {
+            // Capturamos datos de la petición
+            ObjectInputStream inputObject = new ObjectInputStream(connCli.getInputStream());
+            
+            TicketAsk dato = (TicketAsk) inputObject.readObject();
+            Logger.getLogger(TicketsServer.class.getName()).log(
+                    Level.INFO, String.format(
+                            "Recibidos datos petición ticket:\n** " + dato.toString()));
+            
+            // Creamos objeto Ticket en base datos enviados
 
-            case JOVENES:
-                return new BigDecimal(5 * unidades);
-
-            case PENSIONISTAS:
-                return new BigDecimal(4 * unidades);
-
-            default:
-                return null;
+            Ticket ticketToSend = new Ticket(dato);
+            
+            // Enviamos objeto Ticket
+            ObjectOutputStream outObject = new ObjectOutputStream(connCli.getOutputStream());
+            outObject.writeObject(ticketToSend);
+            Logger.getLogger(TicketsServer.class.getName()).log(
+                    Level.INFO, String.format(
+                            "Enviado Ticket: \n** " + ticketToSend.toString()));
+            outObject.close();
+            inputObject.close();
+            
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(TicketsServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

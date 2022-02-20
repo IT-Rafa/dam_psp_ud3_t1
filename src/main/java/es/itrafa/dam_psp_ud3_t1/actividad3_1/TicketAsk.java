@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 /**
+ * Contains data to create a Ticket. designed to send using a socket
  *
  * @author it-ra
  */
@@ -17,48 +18,103 @@ import java.util.Locale;
 public class TicketAsk implements Serializable {
 
     // ATTRIBUTES
-    private String usuario;
-    private int unidades;
-    private LocalDate fecha;
-    private TicketType tipo;
+    private String nameUser;
+    private int cant;
+    private LocalDate dateToUse;
+    private TicketType type;
 
     // CONSTRUCTORS
-    public TicketAsk(String usuario, int unidades, LocalDate fecha, TicketType tipo) {
-        this.usuario = usuario;
-        this.unidades = unidades;
-        this.fecha = fecha;
-        this.tipo = tipo;
+    public TicketAsk(String nameUser, int unidades, LocalDate dateToUse, TicketType type) {
+        this.nameUser = nameUser;
+        this.dateToUse = dateToUse;
+        this.cant = cant;
+        this.type = type;
     }
 
     // GETTER & SETTERS
-    public String getUsuario() {
-        return usuario;
+    /**
+     * Return the name of the user who makes the purchase 
+     *
+     * @return Name of the user who makes the purchase 
+     */
+    public String getNameUser() {
+        return nameUser;
     }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
+    /**
+     * Modify the name of the user who makes the purchase 
+     *
+     * @param nameUser New name of the user who makes the purchase 
+     */
+    public void setNombre(String nameUser) {
+        this.nameUser = nameUser;
     }
 
+    /**
+     * Return the date on which the ticket is valid
+     *
+     * @return Date on which the ticket is valid
+     */
+    public LocalDate getDateToUse() {
+        return dateToUse;
+    }
+
+    /**
+     * Modify the date on which the ticket is valid
+     *
+     * @param dateToUse Date on which the ticket is valid
+     */
+    public void setDateToUse(LocalDate dateToUse) {
+        this.dateToUse = dateToUse;
+    }
+
+    /**
+     * return cant of ticket to buy
+     *
+     * @return cant of ticket to buy
+     */
     public int getUnidades() {
         return unidades;
     }
 
+    /**
+     * Modify cant of ticket to buy
+     *
+     * @param unidades
+     */
     public void setUnidades(int unidades) {
         this.unidades = unidades;
     }
 
+    /**
+     * return date
+     *
+     *
+     * @return name of ticket buyer
+     */
     public LocalDate getFecha() {
         return fecha;
     }
 
+    /**
+     * Modify name of ticket buyer
+     */
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
+    /**
+     * return type of ticket to buy
+     *
+     * @return name of ticket buyer
+     */
     public TicketType getTipo() {
         return tipo;
     }
 
+    /**
+     * Modify type of ticket to buy
+     */
     public void setTipo(TicketType tipo) {
         this.tipo = tipo;
     }
