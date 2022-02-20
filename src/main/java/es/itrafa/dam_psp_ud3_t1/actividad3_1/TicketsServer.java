@@ -7,6 +7,7 @@ package es.itrafa.dam_psp_ud3_t1.actividad3_1;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -37,18 +38,24 @@ public class TicketsServer {
             ObjectInputStream inputObject = new ObjectInputStream(connCli.getInputStream());
 
             TicketAsk dato = (TicketAsk) inputObject.readObject();
-            System.out.println("Recibida Petición Ticket: " + dato.toString());
+            Logger.getLogger(TicketsServer.class.getName()).log(
+                    Level.INFO, String.format(
+                            "Recibida Petición Ticket:\n** " + dato.toString()));
 
             // Creamos objeto
-            Ticket per = new Ticket(dato.getUsuario(), dato.getFecha(), calculateImport(dato.getTipo(), dato.getUnidades()));
+            Ticket ticketToSend = new Ticket(dato.getUsuario(), dato.getFecha(), calculateImport(dato.getTipo(), dato.getUnidades()));
 
             // Enviamos objeto
             ObjectOutputStream outObject = new ObjectOutputStream(connCli.getOutputStream());
 
-            outObject.writeObject(per);
-            System.out.println("Enviado Ticket: " + per.toString());
+            outObject.writeObject(ticketToSend);
+            Logger.getLogger(TicketsServer.class.getName()).log(
+                    Level.INFO, String.format(
+                            "Enviado Ticket: \n** " + ticketToSend.toString()));
 
             // Cerramos todo
+            Logger.getLogger(TicketsServer.class.getName()).log(
+                    Level.INFO, "Cerrando servidor");
             outObject.close();
             inputObject.close();
             connCli.close();
@@ -62,23 +69,23 @@ public class TicketsServer {
         }
     }
 
-    private static int calculateImport(TicketType tipo, int unidades) {
+    private static BigDecimal calculateImport(TicketType tipo, int unidades) {
         // 10 €, Niños: 3 €, Carnet joven: 5 € y 3ª edad: 4 €
         switch (tipo) {
             case NORMAL:
-                return unidades * 10;
+                return new BigDecimal(10 * unidades);
 
             case MENORES:
-                return unidades * 3;
+                return new BigDecimal(3 * unidades);
 
             case JOVENES:
-                return unidades * 5;
-                
+                return new BigDecimal(5 * unidades);
+
             case PENSIONISTAS:
-                return unidades * 4;
-                
+                return new BigDecimal(4 * unidades);
+
             default:
-                return -1;
+                return null;
         }
     }
 }

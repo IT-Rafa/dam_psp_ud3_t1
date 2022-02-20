@@ -6,19 +6,21 @@ package es.itrafa.dam_psp_ud3_t1.actividad3_1;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  *
  * @author it-ra
  */
 @SuppressWarnings("serial")
-public class TicketAsk  implements Serializable{
+public class TicketAsk implements Serializable {
 
     // ATTRIBUTES
     private String usuario;
     private int unidades;
     private LocalDate fecha;
-    private TicketType tipo ;
+    private TicketType tipo;
 
     // CONSTRUCTORS
     public TicketAsk(String usuario, int unidades, LocalDate fecha, TicketType tipo) {
@@ -60,4 +62,21 @@ public class TicketAsk  implements Serializable{
     public void setTipo(TicketType tipo) {
         this.tipo = tipo;
     }
+
+    @Override
+    public String toString() {
+        final DateTimeFormatter formatter
+                = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy",
+                        new Locale("es", "ES"));
+
+        String msg = String.format(
+                "Petición de ticket por usuario %s de %d entradas para %s para el día %s",
+                this.usuario,
+                this.unidades,
+                this.tipo.toString(),
+                this.fecha.format(formatter));
+
+        return msg;
+    }
+
 }
