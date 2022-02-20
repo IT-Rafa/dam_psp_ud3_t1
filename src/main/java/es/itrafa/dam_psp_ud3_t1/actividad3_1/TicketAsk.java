@@ -4,13 +4,21 @@
  */
 package es.itrafa.dam_psp_ud3_t1.actividad3_1;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  *
  * @author it-ra
  */
-public class TicketAsk {
+@SuppressWarnings("serial")
+public class TicketAsk  implements Serializable{
+
+    // ATTRIBUTES
+    private String usuario;
+    private int unidades;
+    private LocalDate fecha;
+    private TicketType tipo ;
 
     // CONSTRUCTORS
     public TicketAsk(String usuario, int unidades, LocalDate fecha, TicketType tipo) {
@@ -19,11 +27,6 @@ public class TicketAsk {
         this.fecha = fecha;
         this.tipo = tipo;
     }
-    // ATTRIBUTES
-    private String usuario;
-    private int unidades;
-    private LocalDate fecha;
-    private TicketType tipo;
 
     // GETTER & SETTERS
     public String getUsuario() {

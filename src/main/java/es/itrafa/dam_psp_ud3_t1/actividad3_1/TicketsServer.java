@@ -23,53 +23,62 @@ public class TicketsServer {
         try {
             int port = 2000;
             // Creamos servidor
-            ServerSocket ticketServer = new ServerSocket(port);
+            ServerSocket connTCP = new ServerSocket(port);
 
             // Ponemos servidor en espera
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format("Server waiting in port %d", port));
-            Socket ticketCli = ticketServer.accept();
+            Socket connCli = connTCP.accept();
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
                             "Client request received from ip %s ",
-                            ticketCli.getRemoteSocketAddress().toString()));
+                            connCli.getRemoteSocketAddress().toString()));
+            // Leemos objeto
+            ObjectInputStream inputObject = new ObjectInputStream(connCli.getInputStream());
 
-
-            // Pendiente cliente
-            // El cliente (Cliente1Objeto)
-            // 1º espera un objeto del servidor
-            // 2º lo modifica
-            // 3º lo reenvia al servidor
-            // 1º Preparamos envío objeto
-            // Preparamos flujo salida objetos
-            ObjectOutputStream outObjeto = new ObjectOutputStream(ticketCli.getOutputStream());
+            TicketAsk dato = (TicketAsk) inputObject.readObject();
+            System.out.println("Recibida Petición Ticket: " + dato.toString());
 
             // Creamos objeto
-            Ticket per = new Ticket("Juan", 20);
+            Ticket per = new Ticket(dato.getUsuario(), dato.getFecha(), calculateImport(dato.getTipo(), dato.getUnidades()));
 
             // Enviamos objeto
-            outObjeto.writeObject(per);
-            System.out.println("Envio" + per.getNombre() + "*" + per.getEdad());
-            // 2º El cliente recibe, modifica y nos envia el objeto modificado
+            ObjectOutputStream outObject = new ObjectOutputStream(connCli.getOutputStream());
 
-            // 3º Preparamos recepción del objeto
-            // Preparamos flujo entrada objetos
-            ObjectInputStream inObjeto = new ObjectInputStream(ticketCli.getInputStream());
-            // Leemos objeto
-            Ticket dato = (Ticket) inObjeto.readObject();
-            System.out.println("Recibo" + dato.getNombre() + "*" + dato.getEdad());
+            outObject.writeObject(per);
+            System.out.println("Enviado Ticket: " + per.toString());
 
             // Cerramos todo
-            inObjeto.close();
-            outObjeto.close();
-            ticketCli.close();
-            ticketServer.close();
+            outObject.close();
+            inputObject.close();
+            connCli.close();
+            connTCP.close();
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(TicketsServer.class.getName()).log(Level.SEVERE, null, ex);
 
         } catch (IOException ex) {
             Logger.getLogger(TicketsServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static int calculateImport(TicketType tipo, int unidades) {
+        // 10 €, Niños: 3 €, Carnet joven: 5 € y 3ª edad: 4 €
+        switch (tipo) {
+            case NORMAL:
+                return unidades * 10;
+
+            case MENORES:
+                return unidades * 3;
+
+            case JOVENES:
+                return unidades * 5;
+                
+            case PENSIONISTAS:
+                return unidades * 4;
+                
+            default:
+                return -1;
         }
     }
 }

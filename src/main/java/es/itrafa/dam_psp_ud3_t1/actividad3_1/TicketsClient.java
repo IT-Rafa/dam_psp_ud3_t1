@@ -24,27 +24,20 @@ public class TicketsClient {
 
         Socket ServerConn = new Socket(Host, puerto);
 
+        TicketAsk askTicket = new TicketAsk("Rafa", 3, LocalDate.now(), TicketType.PENSIONISTAS);
+
         ObjectOutputStream outObject = new ObjectOutputStream(ServerConn.getOutputStream());
-        TicketAsk askTicket = new TicketAsk("Rafa", 3, LocalDate.now(), TicketType.Tercera_edad);
         outObject.writeObject(askTicket);
-        
+
         // Esperamos objeto tipo Ticket del servidor
         ObjectInputStream inputObject = new ObjectInputStream(ServerConn.getInputStream());
 
-        Ticket dato = (TicketAsk) perEnt.readObject();
-        System.out.println("Recibo" + dato.getNombre() + "*" + dato.getEdad());
+        Ticket dato = (Ticket) inputObject.readObject();
+        System.out.println("Recibido Ticket: " + dato.toString());
 
-        //Modifico el objeto
-        dato.setNombre("Juan Ramos");
-        dato.setEdad(22);
-
-        ObjectOutputStream perSal = new ObjectOutputStream(cliente.getOutputStream());
-        perSal.writeObject(dato);
-        System.out.println("Envio" + dato.getNombre() + "*" + dato.getEdad());
-
-        perEnt.close();
-        perSal.close();
-        cliente.close();
+        inputObject.close();
+        outObject.close();
+        ServerConn.close();
 
     }
 }
