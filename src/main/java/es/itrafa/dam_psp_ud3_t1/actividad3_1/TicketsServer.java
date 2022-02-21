@@ -2,13 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package es.itrafa.dam_psp_ud3_t1.actividad3_1.server;
+package es.itrafa.dam_psp_ud3_t1.actividad3_1;
 
-import es.itrafa.dam_psp_ud3_t1.actividad3_1.Ticket;
-import es.itrafa.dam_psp_ud3_t1.actividad3_1.TicketAsk;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.BindException;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -18,32 +20,33 @@ import java.util.logging.Logger;
  * Amusement Park Ticket Server.
  * <p>
  * Starts a server that receives requests from clients to buy tickets, through a
- * TicketAsk object for an amusement park, and returns the amount of the tickets
- * through a Ticket object. Use the 2000 port
+ * TicketAsk object for an amusement park, and returns the full price of the tickets
+ * through a Ticket object. Use the 2000 port.
+ * <p>
+ * Extends Thread to avoid BindException when test.
  *
  * @author it-ra
  */
-public class TicketsServer {
+public class TicketsServer extends Thread {
 
     // ATTRIBUTES
     /**
      * Port through which the connection will be established
      */
-    static final private int PORT = 2000;
+    final private int PORT = 2000;
 
     // MAIN METHOD
     /**
      * Wait for cient connection, if it is successful, exchanges data.
-     *
-     * @param args Arguments input
      */
-    public static void run() {
+    @Override
+    public void run() {
 
         // Server creation indicating port (try-with-resources)
         try (ServerSocket connTCP = new ServerSocket(PORT)) {
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
-                            "Server will wait a client request in port %d", PORT));
+                            "SERVER: Waiting a client request in port %d", PORT));
 
             // When happens, store the new connnection, by a new port,
             // to exchage of data with client
@@ -52,7 +55,7 @@ public class TicketsServer {
             // A client request is received 
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
-                            "Client request received from ip %s ",
+                            "SERVER: Client request received from ip %s ",
                             connCli.getRemoteSocketAddress().toString()));
 
             // Manage client request
@@ -60,14 +63,28 @@ public class TicketsServer {
 
             // Closing
             Logger.getLogger(TicketsServer.class.getName()).log(
-                    Level.INFO, "Cerrando servidor");
+                    Level.INFO, "SERVER: Closing Server");
             // Close client data connection
             connCli.close();
             // connTCP ya cerrado
 
+            // socketExceptions
+        } catch (BindException ex) {
+            Logger.getLogger(TicketsClient.class.getName()).
+                    log(Level.SEVERE, "SERVER: BindException: Probably, the port is in use");
+        } catch (ConnectException ex) {
+            Logger.getLogger(TicketsClient.class.getName()).
+                    log(Level.SEVERE, "SERVER: ConnectException: Probably, no server listening");
+        } catch (NoRouteToHostException ex) {
+            Logger.getLogger(TicketsClient.class.getName()).
+                    log(Level.SEVERE, "SERVER: NoRouteToHostException: Probably, a firewall is intervening or intermediate router is down");
+        } catch (PortUnreachableException ex) {
+            Logger.getLogger(TicketsClient.class.getName()).
+                    log(Level.SEVERE, "SERVER: PortUnreachableException: an ICMP Port Unreachable message has been received on a connected datagram");
+
         } catch (IOException ex) {
-            // Handles both the main() and manageClientData() methods
-            Logger.getLogger(TicketsServer.class.getName()).
+            // Handles both the main() and makeRequest() methods
+            Logger.getLogger(TicketsClient.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
     }
@@ -90,7 +107,7 @@ public class TicketsServer {
             TicketAsk dato = (TicketAsk) inputObject.readObject();
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
-                            "Recibidos datos petición ticket:\n** %s",
+                            "SERVER: Ticket request from client received:\n** %s",
                             dato.toString()));
 
             // Prepare Ticket
@@ -100,7 +117,7 @@ public class TicketsServer {
             outObject.writeObject(ticketToSend);
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
-                            "Enviado Ticket: \n** %s",
+                            "SERVER: Ticket created and sent: \n** %s",
                             ticketToSend.toString()));
 
         } catch (ClassNotFoundException ex) {

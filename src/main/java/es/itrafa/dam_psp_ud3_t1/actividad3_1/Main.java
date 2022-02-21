@@ -4,8 +4,6 @@
  */
 package es.itrafa.dam_psp_ud3_t1.actividad3_1;
 
-import es.itrafa.dam_psp_ud3_t1.actividad3_1.client.TicketsClient;
-import es.itrafa.dam_psp_ud3_t1.actividad3_1.server.TicketsServer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,10 +14,20 @@ import java.util.logging.Logger;
 public class Main {
 
     /**
+     * Test Server a client 
+     * 
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        TicketsServer.run();
+        new TicketsServer().start();
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+        new TicketsClient().start();
 
 
     }
