@@ -1,4 +1,4 @@
-package es.itrafa.dam_psp_ud3_t1.actividad3_1;
+package es.itrafa.dam_psp_ud3_t1.actividad3_2;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,32 +19,40 @@ import java.util.logging.Logger;
 public class TicketsClient {
 
     // ATTRIBUTES
+    /**
+     * Listening Port through which the connection will be established
+     */
     static final private int SERVERPORT = 2000;
+    /**
+     * Server IP
+     */
     static final private String SERVERHOST = "localhost";
 
     // MAIN METHOD
     /**
      * It tries to connect to the server and, if successful, exchanges data.
      *
-     * @param args
+     * @param args Arguments input
      */
     public static void main(String[] args) {
         Ticket ticketReceived;
         try {
-            // Iniciamos comunicación con servidor (try-with-resources
+            // Start communication with Ticket server (try-with-resources)
             try (Socket ServerConn = new Socket(SERVERHOST, SERVERPORT)) {
                 Logger.getLogger(TicketsServer.class.getName()).log(
                         Level.INFO, String.format(
                                 "Iniciada comunicación con servidor ", SERVERHOST));
 
-                // Gestionamos comunicación con servidor y guardamos ticket enviado
+                // Manage data exchange. Sshould produce a Ticket object
                 ticketReceived = makeRequest(ServerConn);
+
                 if (ticketReceived != null) {
                     // Ticket recibido
                     Logger.getLogger(TicketsServer.class.getName()).log(
                             Level.INFO, String.format(
                                     "Recibido Ticket: \n** %s", ticketReceived.toString()));
                 } else {
+                    // Failed data exchange
                     Logger.getLogger(TicketsServer.class.getName()).log(
                             Level.SEVERE, "Fallo de petición");
                 }
@@ -53,7 +61,7 @@ public class TicketsClient {
                         Level.INFO, "Fin comunicación con servidor");
             }
         } catch (IOException ex) {
-            // Gestiona tanto el método main() como makeRequest()
+            // Handles both the main() and makeRequest() methods
             Logger.getLogger(TicketsClient.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
@@ -62,12 +70,17 @@ public class TicketsClient {
 
     // OTHER METHODS
     /**
-     * Make request
+     * Controls the exchange of data between client and server from the client
+     * side.
      *
      * @param ServerConn
+     * @return ticket with purchase information
+     * 
      * @throws IOException
      */
     private static Ticket makeRequest(Socket ServerConn) throws IOException {
+        // Var to capture Ticket object
+        Ticket ticketReceived = null;
 
         // Creamos petición mediante objeto TicketAsk
         TicketAsk askTicket = new TicketAsk(
@@ -76,24 +89,23 @@ public class TicketsClient {
                 TicketType.PENSIONISTAS,
                 3);
 
-        Ticket ticketReceived = null;
-
-        // Preparamos flujos entrada/salida (try-with resources)
+        // Prepare input and output streams (try-with resources)
         try (
                 ObjectOutputStream outObject
                 = new ObjectOutputStream(ServerConn.getOutputStream());
                 ObjectInputStream inputObject
                 = new ObjectInputStream(ServerConn.getInputStream());) {
 
-            // Enviamos petición mediante objeto TicketAsk
+            // Send request to Ticket Server
             outObject.writeObject(askTicket);
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
                             "Enviados datos petición ticket:\n%s ",
                             askTicket.toString()));
 
-            // Esperamos objeto tipo Ticket del servidor
+            // Get Ticket from Ticket Server
             ticketReceived = (Ticket) inputObject.readObject();
+            // streams closed
 
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(TicketsClient.class.getName()).

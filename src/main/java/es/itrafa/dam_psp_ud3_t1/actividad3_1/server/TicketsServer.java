@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package es.itrafa.dam_psp_ud3_t1.actividad3_1;
+package es.itrafa.dam_psp_ud3_t1.actividad3_1.server;
 
+import es.itrafa.dam_psp_ud3_t1.actividad3_1.Ticket;
+import es.itrafa.dam_psp_ud3_t1.actividad3_1.TicketAsk;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,56 +17,68 @@ import java.util.logging.Logger;
 /**
  * Amusement Park Ticket Server.
  * <p>
- * Starts a server that receives requests from clients to buy tickets, through a 
- * TicketAsk object for an amusement park, and returns the amount of the tickets 
+ * Starts a server that receives requests from clients to buy tickets, through a
+ * TicketAsk object for an amusement park, and returns the amount of the tickets
  * through a Ticket object. Use the 2000 port
  *
  * @author it-ra
  */
 public class TicketsServer {
+
     // ATTRIBUTES
-
-    static final private int PORT = 2000;
-    // MAIN METHOD
-    /** 
-     * Wait for cient connection, if it is successful, exchanges data.
-     * 
-     * @param args 
+    /**
+     * Port through which the connection will be established
      */
-    public static void main(String[] args) {
+    static final private int PORT = 2000;
 
-        // Creamos servidor (try-with-resources)
+    // MAIN METHOD
+    /**
+     * Wait for cient connection, if it is successful, exchanges data.
+     *
+     * @param args Arguments input
+     */
+    public static void run() {
+
+        // Server creation indicating port (try-with-resources)
         try (ServerSocket connTCP = new ServerSocket(PORT)) {
-            // Ponemos servidor en espera
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
                             "Server will wait a client request in port %d", PORT));
 
-            // Se espera a que un cliente realice una conexión.
-            // Al realizarse, devuelve un objeto Socket, a través del cual se 
-            // establecerá  el resto de comunicación con el cliente
+            // When happens, store the new connnection, by a new port,
+            // to exchage of data with client
             Socket connCli = connTCP.accept();
+
+            // A client request is received 
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
                             "Client request received from ip %s ",
                             connCli.getRemoteSocketAddress().toString()));
 
-            // Gestionamos petición cliente
+            // Manage client request
             manageClientData(connCli);
 
-            // Cerramos Servidor
+            // Closing
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, "Cerrando servidor");
+            // Close client data connection
             connCli.close();
             // connTCP ya cerrado
 
         } catch (IOException ex) {
-            // Gestiona tanto el método main() como manageClientData()
+            // Handles both the main() and manageClientData() methods
             Logger.getLogger(TicketsServer.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * Controls the exchange of data between client and server from the server
+     * side.
+     *
+     * @param connCli Connection to exchange data with client
+     * @throws IOException
+     */
     private static void manageClientData(Socket connCli) throws IOException {
 
         try (ObjectInputStream inputObject
@@ -72,17 +86,17 @@ public class TicketsServer {
                 ObjectOutputStream outObject
                 = new ObjectOutputStream(connCli.getOutputStream())) {
 
-            // Capturamos datos de la petición
+            // Get data of client request
             TicketAsk dato = (TicketAsk) inputObject.readObject();
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(
                             "Recibidos datos petición ticket:\n** %s",
                             dato.toString()));
 
-            // Creamos objeto Ticket en base datos enviados
+            // Prepare Ticket
             Ticket ticketToSend = new Ticket(dato);
 
-            // Enviamos objeto Ticket
+            // Send Ticket
             outObject.writeObject(ticketToSend);
             Logger.getLogger(TicketsServer.class.getName()).log(
                     Level.INFO, String.format(

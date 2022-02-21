@@ -1,6 +1,5 @@
 /**
  * Enunciado PSP03 - Actividad 3.1
- * Actividad 3.1:
  * El objetivo del ejercicio es crear una aplicación cliente/servidor que se comunique 
  * por el puerto 2000 y realice lo siguiente:
  *   - Diseña una aplicación cliente/servidor TCP donde el cliente le envía
