@@ -46,7 +46,8 @@ public class TicketsClient extends Thread {
             try (Socket ServerConn = new Socket(SERVERHOST, SERVERPORT)) {
                 Logger.getLogger(TicketsServer.class.getName()).log(
                         Level.INFO, String.format(
-                                "CLIENT: Started communication with server ", SERVERHOST));
+                                "CLIENT: Started communication with server %s:%d",
+                                ServerConn.getInetAddress(), ServerConn.getPort()));
 
                 // Manage data exchange. Sshould produce a Ticket object
                 ticketReceived = makeRequest(ServerConn);
@@ -55,7 +56,8 @@ public class TicketsClient extends Thread {
                     // Ticket recibido
                     Logger.getLogger(TicketsServer.class.getName()).log(
                             Level.INFO, String.format(
-                                    "CLIENT: Ticket received successfully: \n** %s", ticketReceived.toString()));
+                                    "CLIENT: Ticket received successfully: \n** %s",
+                                    ticketReceived.toString()));
                 } else {
                     // Failed data exchange
                     Logger.getLogger(TicketsServer.class.getName()).log(
@@ -63,8 +65,11 @@ public class TicketsClient extends Thread {
                 }
 
                 Logger.getLogger(TicketsServer.class.getName()).log(
-                        Level.INFO, "CLIENT: End communication with server");
-            }
+                        Level.INFO, String.format(
+                                "CLIENT: End communication with server %s:%d",
+                                ServerConn.getInetAddress(), ServerConn.getPort()));
+            }// (try-with-resources)
+            
             // socketExceptions
         } catch (BindException ex) {
             Logger.getLogger(TicketsClient.class.getName()).
@@ -120,7 +125,7 @@ public class TicketsClient extends Thread {
             Logger.getLogger(TicketsServer.class
                     .getName()).log(
                             Level.INFO, String.format(
-                                    "CLIENT: Enviados datos petición ticket:\n%s ",
+                                    "CLIENT: Ticket Request sent to Server :\n** %s ",
                                     askTicket.toString()));
 
             // Get Ticket from Ticket Server

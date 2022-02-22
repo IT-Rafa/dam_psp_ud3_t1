@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package es.itrafa.dam_psp_ud3_t1.actividad3_1;
 
 import java.io.IOException;
@@ -19,11 +15,9 @@ import java.util.logging.Logger;
 /**
  * Amusement Park Ticket Server.
  * <p>
- * Starts a server that receives requests from clients to buy tickets, through a
- * TicketAsk object for an amusement park, and returns the full price of the tickets
- * through a Ticket object. Use the 2000 port.
+ * Starts a server that receives requests from one client to buy a tickets using TCP.
  * <p>
- * Extends Thread to avoid BindException when test.
+ * Use a TicketAsk objetct to contain the request data, and a Ticket object to contain the data to return.
  *
  * @author it-ra
  */

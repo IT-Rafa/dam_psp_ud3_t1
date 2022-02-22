@@ -1,29 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package es.itrafa.dam_psp_ud3_t1.actividad3_2;
 
 /**
- *
+ * Contains main method to test exercise
+ * 
  * @author it-ra
  */
 public class Main {
 
     /**
+     * Run server and several clients as threads to avoid BindException fail
+     * 
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        // init server
         new MultiCastServer().start();
+        
+        // init clients
+        int cantClients = 3;
+        for (int i = 1; i <= cantClients; i++) {
+            new MultiCastClient(i).start();
+        }
 
-        MultiCastClient c1 = new MultiCastClient("Cliente 1");
-        c1.start();
-
-        MultiCastClient c2 = new MultiCastClient("Cliente 2");
-        c2.start();
-
-        MultiCastClient c3 = new MultiCastClient("Cliente 3");
-        c3.start();
     }
-
 }
