@@ -18,10 +18,12 @@ public class Main {
 
         MultiCastClient c1 = new MultiCastClient("Cliente 1");
         c1.start();
-        
+
         MultiCastClient c2 = new MultiCastClient("Cliente 2");
         c2.start();
-        
+
+        MultiCastClient c3 = new MultiCastClient("Cliente 3");
+        c3.start();
     }
 
 }
